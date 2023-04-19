@@ -1,15 +1,18 @@
 import { compareAsc, toDate } from "date-fns";
-import createTask from "./Task";
+import { createTask } from "./Task";
 import createProject from "./Project";
 
 export default function toDoList() {
-  this.projects = [];
+  const projects = [];
 
   return {
+    projects,
+
     generateInitialProjects() {
-      this.projects.push(createProject("Inbox"));
-      this.projects.push(createProject("Today"));
-      this.projects.push(createProject("This week"));
+      projects.push(createProject("Inbox"));
+      projects.push(createProject("Today"));
+      projects.push(createProject("This Week"));
+      return projects;
     },
 
     setProjects(projects) {
@@ -17,7 +20,7 @@ export default function toDoList() {
     },
 
     getProjects() {
-      return this.projects;
+      return projects;
     },
 
     getProject(projectName) {

@@ -9,6 +9,10 @@ const createProject = (title) => {
       this.tasks.push(todo);
     },
 
+    getName() {
+      return this.title;
+    },
+
     removeTask(todoIndex) {
       this.tasks.splice(todoIndex, 1);
     },
@@ -33,4 +37,4 @@ const createProject = (title) => {
   };
 };
 
-export { createProject };
+export default createProject;
