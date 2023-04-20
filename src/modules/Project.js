@@ -1,12 +1,13 @@
 import { toDate, isToday, isThisWeek, subDays } from "date-fns";
 
 const createProject = (title) => {
+  const tasks = [];
   return {
     title,
-    tasks: [],
+    tasks,
 
     addTask(todo) {
-      this.tasks.push(todo);
+      tasks.push(todo);
     },
 
     getName() {
@@ -18,7 +19,7 @@ const createProject = (title) => {
     },
 
     getTasks() {
-      return this.tasks;
+      return tasks;
     },
 
     getTasksToday() {

@@ -5,15 +5,14 @@ import createProject from "./Project";
 export default function toDoList() {
   const projects = [];
 
+  (function generateInitialProjects() {
+    projects.push(createProject("Inbox"));
+    projects.push(createProject("Today"));
+    projects.push(createProject("This Week"));
+  })();
+
   return {
     projects,
-
-    generateInitialProjects() {
-      projects.push(createProject("Inbox"));
-      projects.push(createProject("Today"));
-      projects.push(createProject("This Week"));
-      return projects;
-    },
 
     setProjects(projects) {
       this.projects = projects;
@@ -62,16 +61,16 @@ export default function toDoList() {
     },
 
     updateWeekProject() {
-      this.getProject("This week").tasks = [];
+      this.getProject("This Week").tasks = [];
 
       this.projects.forEach((project) => {
-        if (project.getName() === "Today" || project.getName() === "This week")
+        if (project.getName() === "Today" || project.getName() === "This Week")
           return;
 
         const weekTasks = project.getTasksThisWeek();
         weekTasks.forEach((task) => {
           const taskName = `${task.getName()} (${project.getName()})`;
-          this.getProject("This week").addTask(
+          this.getProject("This Week").addTask(
             createTask(taskName, task.getDate())
           );
         });
