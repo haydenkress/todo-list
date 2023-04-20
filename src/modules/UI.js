@@ -39,10 +39,11 @@ export default function UI() {
       header,
       sidebar,
       projectArea,
+      Menu,
     };
   })();
 
-  const createSidebar = function () {
+  const initiateSidebar = function () {
     const defaultProjectList = document.createElement("div");
     defaultProjectList.classList.add("default-projects");
     mainContent.sidebar.append(defaultProjectList);
@@ -58,7 +59,7 @@ export default function UI() {
 
     const projectsHeading = document.createElement("div");
     projectsHeading.classList.add("heading");
-    projectsHeading.textContent = "Projects";
+    projectsHeading.textContent = "My Projects";
     mainContent.sidebar.append(projectsHeading);
 
     const projectList = document.createElement("div");
@@ -91,6 +92,17 @@ export default function UI() {
         projectInput.remove();
         mainContent.sidebar.append(addProjectBtn);
       });
+    });
+
+    mainContent.Menu.addEventListener("click", () => {
+      if (mainContent.main.contains(mainContent.sidebar)) {
+        mainContent.sidebar.remove();
+      } else {
+        mainContent.main.insertBefore(
+          mainContent.sidebar,
+          mainContent.main.firstChild
+        );
+      }
     });
   };
 
@@ -163,8 +175,9 @@ export default function UI() {
   }
 
   const createLayout = (function () {
-    createSidebar();
-    const defaultProject = toDoList().getProjects()[0];
-    openProject(defaultProject, defaultProject.getTasks());
+    initiateSidebar();
+    const defaultProject = document.querySelector(".inbox");
+    defaultProject.dispatchEvent(new Event("click"));
   })();
 }
+// for some reason clicking on the "today" tab erases the getTasks of "inbox" but the tasks aren't erased when clicking on the "this week" tab. why?

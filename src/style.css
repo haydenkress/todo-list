@@ -29,7 +29,7 @@ body {
 }
 
 .sidebar {
-  grid-column: 0;
+  grid-row: 1;
   border: 1px black;
   background-color: #f8f8f8;
   box-sizing: border-box;
@@ -51,7 +51,7 @@ body {
 }
 
 .heading {
-  font-size: 30px;
+  font-size: 20px;
   margin: 20px 0px;
 }
 
@@ -66,4 +66,5 @@ body {
 .project-area {
   box-sizing: border-box;
   padding: 30px;
+  grid-row: 1;
 }
