@@ -5,15 +5,16 @@ import createProject from "./Project";
 export default function toDoList() {
   let projects = [];
 
-  function generateInitialProjects() {
-    const inbox = createProject("Inbox");
-    projects.push(inbox);
-    projects.push(createProject("Today"));
-    projects.push(createProject("This Week"));
-    inbox.addTask(createTask("do the dishes"));
+  function generateProject(name) {
+    const project = createProject(name);
+    projects.push(project);
+    project.addTask(createTask("do the dishes"));
     saveToLocalStorage();
   }
-  generateInitialProjects();
+
+  generateProject("Inbox");
+  generateProject("Today");
+  generateProject("This Week");
 
   function saveToLocalStorage() {
     localStorage.setItem("projects", JSON.stringify(projects));
@@ -32,8 +33,7 @@ export default function toDoList() {
           createTask(taskData.name, taskData.date)
         );
       } else {
-        saveToLocalStorage();
-        generateInitialProjects();
+        //saveToLocalStorage();
       }
       return project;
     });
@@ -44,6 +44,7 @@ export default function toDoList() {
     projects,
 
     loadFromLocalStorage,
+    generateProject,
 
     setProjects(projects) {
       this.projects = projects;

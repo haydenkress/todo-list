@@ -1,17 +1,17 @@
 import "../style.css";
 import { format } from "date-fns";
-import toDoList from "./todolist";
+import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
 import createProject from "./Project";
 import { createTask } from "./Task";
 
 export default function UI() {
-  // START HERE
   const body = document.querySelector("body");
   const content = document.createElement("div");
   content.classList.add("content");
   body.append(content);
 
+  // create initial content
   const mainContent = (function () {
     const header = document.createElement("div");
     header.classList.add("header");
@@ -44,14 +44,16 @@ export default function UI() {
     };
   })();
 
+  // starts the chain of functions
   const initiateSidebar = function () {
     const totalProjects = toDoList().loadFromLocalStorage();
-    console.log(totalProjects);
+    console.log(`total projects: ${totalProjects}`);
     const defaultProjects = totalProjects.slice(0, 3);
     const createdProjects = totalProjects.slice(3);
-    console.log(defaultProjects); // the default projects, which is really good. it shows its in default storage
-    console.log(createdProjects); // none, which is good since there is none.
+    console.log(`default projects: ${defaultProjects}`);
+    console.log(`created projects: ${createdProjects}`);
 
+    // div and append function for the default projects
     const defaultProjectList = document.createElement("div");
     defaultProjectList.classList.add("default-projects");
     mainContent.sidebar.append(defaultProjectList);
@@ -61,6 +63,7 @@ export default function UI() {
       defaultProjectList.appendChild(addedProject);
     });
 
+    // heaading separating default and created projs
     const projectsHeading = document.createElement("div");
     projectsHeading.classList.add("heading");
     projectsHeading.textContent = "My Projects";
@@ -75,6 +78,7 @@ export default function UI() {
       projectList.append(addedProject);
     });
 
+    // adding new projects - THIS IS THE PROBLEM AREA  -- having trouble saving added projects to local storage and retrieved upon page reload
     const addProjectBtn = document.createElement("button");
     addProjectBtn.classList.add("add-project-btn");
     addProjectBtn.textContent = "Add Project";
@@ -85,11 +89,12 @@ export default function UI() {
       projectList.append(projectInput);
       addProjectBtn.remove();
 
+      // THIS IN PARTICULAR
       projectInput.addEventListener("blur", () => {
         const projectName = projectInput.value;
         if (projectName.trim() !== "") {
           const newProject = createProject(projectName);
-          toDoList().addProject(newProject); // Add new project to todo list projects array
+          toDoList().generateProject(projectName);
           const addedProject = createProjectTab(newProject);
           projectList.append(addedProject); // Append new project to sidebar
         }
@@ -110,6 +115,7 @@ export default function UI() {
     });
   };
 
+  // creating the actual tabs of the projects to sidebar
   function createProjectTab(project) {
     const projectElement = document.createElement("div");
     projectElement.classList.add("project");
@@ -130,6 +136,7 @@ export default function UI() {
     mainContent.projectArea.textContent = "";
   }
 
+  // opening the project in the task area
   function openProject(project, tasks) {
     const projectName = project.title;
 
@@ -153,6 +160,7 @@ export default function UI() {
       addTaskToDOM(task);
     });
 
+    // OTHER PROBLEM AREA -- having trouble saving added tasks to local storage and retrieved upon page reload
     if (project.title !== "Today" && project.title !== "This Week") {
       const addTaskBtn = document.createElement("button");
       addTaskBtn.classList.add("add-task-btn");
@@ -184,4 +192,3 @@ export default function UI() {
     defaultProject.dispatchEvent(new Event("click"));
   })();
 }
-// for some reason clicking on the "today" tab erases the getTasks of "inbox" but the tasks aren't erased when clicking on the "this week" tab. why?
