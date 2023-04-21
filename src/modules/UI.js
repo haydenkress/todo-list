@@ -6,6 +6,7 @@ import createProject from "./Project";
 import { createTask } from "./Task";
 
 export default function UI() {
+  // START HERE
   const body = document.querySelector("body");
   const content = document.createElement("div");
   content.classList.add("content");
@@ -44,13 +45,16 @@ export default function UI() {
   })();
 
   const initiateSidebar = function () {
+    const totalProjects = toDoList().loadFromLocalStorage();
+    console.log(totalProjects);
+    const defaultProjects = totalProjects.slice(0, 3);
+    const createdProjects = totalProjects.slice(3);
+    console.log(defaultProjects); // the default projects, which is really good. it shows its in default storage
+    console.log(createdProjects); // none, which is good since there is none.
+
     const defaultProjectList = document.createElement("div");
     defaultProjectList.classList.add("default-projects");
     mainContent.sidebar.append(defaultProjectList);
-
-    const totalProjects = toDoList().getProjects();
-    const defaultProjects = totalProjects.slice(0, 3);
-    const createdProjects = totalProjects.slice(3);
 
     defaultProjects.forEach((project) => {
       const addedProject = createProjectTab(project);

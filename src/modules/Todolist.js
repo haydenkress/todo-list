@@ -3,27 +3,55 @@ import { createTask } from "./Task";
 import createProject from "./Project";
 
 export default function toDoList() {
-  const projects = [];
+  let projects = [];
 
-  (function generateInitialProjects() {
-    projects.push(createProject("Inbox"));
+  function generateInitialProjects() {
+    const inbox = createProject("Inbox");
+    projects.push(inbox);
     projects.push(createProject("Today"));
     projects.push(createProject("This Week"));
-  })();
+    inbox.addTask(createTask("do the dishes"));
+    saveToLocalStorage();
+  }
+  generateInitialProjects();
+
+  function saveToLocalStorage() {
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }
+
+  function getProject(projectName) {
+    return this.projects.find((project) => project.getName() === projectName);
+  }
+
+  function loadFromLocalStorage() {
+    const projectsData = JSON.parse(localStorage.getItem("projects"));
+    projects = projectsData.map((projectID) => {
+      const project = createProject(projectID.title);
+      if (projectID.tasks) {
+        project.tasks = projectID.tasks.map((taskData) =>
+          createTask(taskData.name, taskData.date)
+        );
+      } else {
+        saveToLocalStorage();
+        generateInitialProjects();
+      }
+      return project;
+    });
+    return projects;
+  }
 
   return {
     projects,
 
+    loadFromLocalStorage,
+
     setProjects(projects) {
       this.projects = projects;
+      saveToLocalStorage();
     },
 
     getProjects() {
-      return projects;
-    },
-
-    getProject(projectName) {
-      return this.projects.find((project) => project.getName() === projectName);
+      loadFromLocalStorage();
     },
 
     contains(projectName) {
@@ -34,13 +62,17 @@ export default function toDoList() {
       if (this.projects.find((project) => project.name === newProject.name))
         return;
       this.projects.push(newProject);
+      saveToLocalStorage();
     },
+
+    getProject,
 
     deleteProject(projectName) {
       const projectToDelete = this.projects.find(
         (project) => project.getName() === projectName
       );
       this.projects.splice(this.projects.indexOf(projectToDelete), 1);
+      saveToLocalStorage();
     },
 
     updateTodayProject() {
@@ -58,6 +90,7 @@ export default function toDoList() {
           );
         });
       });
+      saveToLocalStorage();
     },
 
     updateWeekProject() {
@@ -86,6 +119,7 @@ export default function toDoList() {
             )
           )
       );
+      saveToLocalStorage();
     },
   };
 }

@@ -1,10 +1,6 @@
-const createTask = (title, description, dueDate, priority, notes = "") => {
+const createTask = (title) => {
   return {
     title,
-    description,
-    dueDate,
-    priority,
-    notes,
     isComplete: false, // default value for completion status
 
     markAsComplete() {
