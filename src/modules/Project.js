@@ -24,7 +24,7 @@ const createProject = (title) => {
     },
 
     getName() {
-      return this.title;
+      return title;
     },
 
     removeTask(todoIndex) {

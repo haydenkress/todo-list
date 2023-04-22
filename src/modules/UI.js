@@ -3,9 +3,11 @@ import { format } from "date-fns";
 import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
 import createProject from "./Project";
-import { createTask } from "./Task";
+import createTask from "./Task";
 
 export default function UI() {
+  const myToDoList = toDoList();
+
   const body = document.querySelector("body");
   const content = document.createElement("div");
   content.classList.add("content");
@@ -46,11 +48,14 @@ export default function UI() {
 
   // starts the chain of functions
   const initiateSidebar = function () {
-    const totalProjects = toDoList().loadFromLocalStorage();
+    //const inbox = myToDoList.generateProject("Inbox");
+    const totalProjects = myToDoList.loadFromLocalStorage();
     console.log(`total projects: ${totalProjects}`);
-    const defaultProjects = totalProjects.slice(0, 3);
-    const createdProjects = totalProjects.slice(3);
+
+    const defaultProjects = totalProjects.slice(0, 1);
     console.log(`default projects: ${defaultProjects}`);
+
+    const createdProjects = totalProjects.slice(1);
     console.log(`created projects: ${createdProjects}`);
 
     // div and append function for the default projects
@@ -58,10 +63,12 @@ export default function UI() {
     defaultProjectList.classList.add("default-projects");
     mainContent.sidebar.append(defaultProjectList);
 
-    defaultProjects.forEach((project) => {
-      const addedProject = createProjectTab(project);
-      defaultProjectList.appendChild(addedProject);
-    });
+    function addDefaultProjects() {
+      defaultProjects.forEach((project) => {
+        const addedProject = createProjectTab(project);
+        defaultProjectList.appendChild(addedProject);
+      });
+    }
 
     // heaading separating default and created projs
     const projectsHeading = document.createElement("div");
@@ -73,10 +80,12 @@ export default function UI() {
     projectList.classList.add("projects");
     mainContent.sidebar.append(projectList);
 
-    createdProjects.forEach((project) => {
-      const addedProject = createProjectTab(project);
-      projectList.append(addedProject);
-    });
+    function addCreatedProjects() {
+      createdProjects.forEach((project) => {
+        const addedProject = createProjectTab(project);
+        projectList.append(addedProject);
+      });
+    }
 
     // adding new projects - THIS IS THE PROBLEM AREA  -- having trouble saving added projects to local storage and retrieved upon page reload
     const addProjectBtn = document.createElement("button");
@@ -89,14 +98,12 @@ export default function UI() {
       projectList.append(projectInput);
       addProjectBtn.remove();
 
-      // THIS IN PARTICULAR
       projectInput.addEventListener("blur", () => {
         const projectName = projectInput.value;
         if (projectName.trim() !== "") {
-          const newProject = createProject(projectName);
-          toDoList().generateProject(projectName);
+          const newProject = myToDoList.generateProject(projectName);
           const addedProject = createProjectTab(newProject);
-          projectList.append(addedProject); // Append new project to sidebar
+          projectList.append(addedProject);
         }
         projectInput.remove();
         mainContent.sidebar.append(addProjectBtn);
@@ -113,6 +120,9 @@ export default function UI() {
         );
       }
     });
+
+    addDefaultProjects();
+    addCreatedProjects();
   };
 
   // creating the actual tabs of the projects to sidebar
@@ -175,10 +185,10 @@ export default function UI() {
         taskInput.addEventListener("blur", () => {
           const taskName = taskInput.value;
           if (taskName.trim() !== "") {
-            const newTask = createTask(taskName);
-            project.addTask(newTask); // Add new project to todo list projects array
+            const newTask = myToDoList.saveTask(project, taskName);
             addTaskToDOM(newTask);
           }
+          myToDoList.saveToLocalStorage();
           taskInput.remove();
           mainContent.projectArea.append(addTaskBtn);
         });
@@ -188,7 +198,7 @@ export default function UI() {
 
   const createLayout = (function () {
     initiateSidebar();
-    const defaultProject = document.querySelector(".inbox");
-    defaultProject.dispatchEvent(new Event("click"));
+    //const defaultProject = document.querySelector(".inbox");
+    //defaultProject.dispatchEvent(new Event("click"));
   })();
 }

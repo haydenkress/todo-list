@@ -1,126 +1,97 @@
 import { compareAsc, toDate } from "date-fns";
-import { createTask } from "./Task";
+import createTask from "./Task";
 import createProject from "./Project";
 
 export default function toDoList() {
   let projects = [];
 
-  function generateProject(name) {
-    const project = createProject(name);
-    projects.push(project);
-    project.addTask(createTask("do the dishes"));
-    saveToLocalStorage();
-  }
-
-  generateProject("Inbox");
-  generateProject("Today");
-  generateProject("This Week");
-
-  function saveToLocalStorage() {
-    localStorage.setItem("projects", JSON.stringify(projects));
-  }
-
-  function getProject(projectName) {
-    return this.projects.find((project) => project.getName() === projectName);
-  }
-
-  function loadFromLocalStorage() {
-    const projectsData = JSON.parse(localStorage.getItem("projects"));
-    projects = projectsData.map((projectID) => {
-      const project = createProject(projectID.title);
-      if (projectID.tasks) {
-        project.tasks = projectID.tasks.map((taskData) =>
-          createTask(taskData.name, taskData.date)
-        );
-      } else {
-        //saveToLocalStorage();
-      }
-      return project;
-    });
-    return projects;
-  }
-
   return {
     projects,
 
-    loadFromLocalStorage,
-    generateProject,
+    saveToLocalStorage: function () {
+      localStorage.setItem("projects", JSON.stringify(projects));
+    },
 
-    setProjects(projects) {
+    /*loadFromLocalStorage: function () {
+      const projectsData = JSON.parse(localStorage.getItem("projects"));
+      if (projectsData) {
+        projects = projectsData.map((projectData) => {
+          const project = createProject(projectData.title);
+          if (projectData.tasks) {
+            project.tasks = projectData.tasks.map(
+              (taskData) => createTask(taskData.name) // Remove taskData.date argument
+            );
+          }
+          return project;
+        });
+      } else {
+        this.saveToLocalStorage(); // Save the updated myToDoList object with default projects to local storage
+      }
+      this.saveToLocalStorage(); // Save the updated myToDoList object with tasks data to local storage
+      return projects;
+    },*/
+
+    loadFromLocalStorage: function () {
+      const projectsData = JSON.parse(localStorage.getItem("projects"));
+      if (projectsData) {
+        projects = projectsData.map((projectData) => {
+          const project = createProject(projectData.title);
+          if (projectData.tasks) {
+            project.tasks = projectData.tasks.map((taskData) => {
+              const task = createTask(taskData.title); // Update to use 'title' property instead of 'name'
+              task.isComplete = taskData.isComplete; // Set isComplete property from taskData
+              return task;
+            });
+          }
+          return project;
+        });
+      } else {
+        this.saveToLocalStorage(); // Save the updated myToDoList object with default projects to local storage
+      }
+      return projects;
+    },
+
+    getProject: function (projectName) {
+      return this.projects.find((project) => project.getName() === projectName);
+    },
+
+    getProjects: function () {
+      this.loadFromLocalStorage();
+    },
+
+    setProjects: function (projects) {
       this.projects = projects;
-      saveToLocalStorage();
+      this.saveToLocalStorage();
     },
 
-    getProjects() {
-      loadFromLocalStorage();
+    generateProject: function (name) {
+      const project = createProject(name);
+      projects.push(project);
+      project.addTask(createTask("do the dishes"));
+      this.saveToLocalStorage();
+      return project;
     },
 
-    contains(projectName) {
-      return this.projects.some((project) => project.getName() === projectName);
+    saveTask: function (project, title) {
+      const task = createTask(title);
+      project.addTask(task);
+      this.saveToLocalStorage();
+      return task;
     },
 
-    addProject(newProject) {
+    addProject: function (newProject) {
       if (this.projects.find((project) => project.name === newProject.name))
         return;
       this.projects.push(newProject);
-      saveToLocalStorage();
+      this.saveToLocalStorage();
     },
 
-    getProject,
-
-    deleteProject(projectName) {
+    deleteProject: function (projectName) {
       const projectToDelete = this.projects.find(
         (project) => project.getName() === projectName
       );
       this.projects.splice(this.projects.indexOf(projectToDelete), 1);
-      saveToLocalStorage();
-    },
-
-    updateTodayProject() {
-      this.getProject("Today").tasks = [];
-
-      this.projects.forEach((project) => {
-        if (project.getName() === "Today" || project.getName() === "This week")
-          return;
-
-        const todayTasks = project.getTasksToday();
-        todayTasks.forEach((task) => {
-          const taskName = `${task.getName()} (${project.getName()})`;
-          this.getProject("Today").addTask(
-            createTask(taskName, task.getDate())
-          );
-        });
-      });
-      saveToLocalStorage();
-    },
-
-    updateWeekProject() {
-      this.getProject("This Week").tasks = [];
-
-      this.projects.forEach((project) => {
-        if (project.getName() === "Today" || project.getName() === "This Week")
-          return;
-
-        const weekTasks = project.getTasksThisWeek();
-        weekTasks.forEach((task) => {
-          const taskName = `${task.getName()} (${project.getName()})`;
-          this.getProject("This Week").addTask(
-            createTask(taskName, task.getDate())
-          );
-        });
-      });
-
-      this.getProject("This week").setTasks(
-        this.getProject("This week")
-          .getTasks()
-          .sort((taskA, taskB) =>
-            compareAsc(
-              toDate(new Date(taskA.getDateFormatted())),
-              toDate(new Date(taskB.getDateFormatted()))
-            )
-          )
-      );
-      saveToLocalStorage();
+      this.saveToLocalStorage();
     },
   };
 }
