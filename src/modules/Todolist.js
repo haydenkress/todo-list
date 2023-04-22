@@ -12,25 +12,6 @@ export default function toDoList() {
       localStorage.setItem("projects", JSON.stringify(projects));
     },
 
-    /*loadFromLocalStorage: function () {
-      const projectsData = JSON.parse(localStorage.getItem("projects"));
-      if (projectsData) {
-        projects = projectsData.map((projectData) => {
-          const project = createProject(projectData.title);
-          if (projectData.tasks) {
-            project.tasks = projectData.tasks.map(
-              (taskData) => createTask(taskData.name) // Remove taskData.date argument
-            );
-          }
-          return project;
-        });
-      } else {
-        this.saveToLocalStorage(); // Save the updated myToDoList object with default projects to local storage
-      }
-      this.saveToLocalStorage(); // Save the updated myToDoList object with tasks data to local storage
-      return projects;
-    },*/
-
     loadFromLocalStorage: function () {
       const projectsData = JSON.parse(localStorage.getItem("projects"));
       if (projectsData) {
