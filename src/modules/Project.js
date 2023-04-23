@@ -1,5 +1,3 @@
-import { toDate, isToday, isThisWeek, subDays } from "date-fns";
-
 const createProject = (title) => {
   const tasks = [];
 
@@ -38,20 +36,6 @@ const createProject = (title) => {
       } else {
         return this.tasks;
       }
-    },
-
-    getTasksToday() {
-      return this.tasks.filter((task) => {
-        const taskDate = new Date(task.getDateFormatted());
-        return isToday(toDate(taskDate));
-      });
-    },
-
-    getTasksThisWeek() {
-      return this.tasks.filter((task) => {
-        const taskDate = new Date(task.getDateFormatted());
-        return isThisWeek(subDays(toDate(taskDate), 1));
-      });
     },
   };
 };

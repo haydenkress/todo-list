@@ -1,5 +1,4 @@
 import "../style.css";
-import { format } from "date-fns";
 import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
 import createProject from "./Project";
@@ -48,6 +47,7 @@ export default function UI() {
 
   // starts the chain of functions
   const initiateSidebar = function () {
+    myToDoList.generateProject("Inbox");
     //const inbox = myToDoList.generateProject("Inbox");
     const totalProjects = myToDoList.loadFromLocalStorage();
     console.log(`total projects: ${totalProjects}`);
@@ -70,7 +70,7 @@ export default function UI() {
       });
     }
 
-    // heaading separating default and created projs
+    // heading separating default and created projs
     const projectsHeading = document.createElement("div");
     projectsHeading.classList.add("heading");
     projectsHeading.textContent = "My Projects";
@@ -164,6 +164,7 @@ export default function UI() {
       taskElement.classList.add("task");
       taskElement.textContent = task.title;
       taskArea.append(taskElement);
+      return taskElement;
     }
 
     tasks.forEach((task) => {
@@ -188,7 +189,6 @@ export default function UI() {
             const newTask = myToDoList.saveTask(project, taskName);
             addTaskToDOM(newTask);
           }
-          myToDoList.saveToLocalStorage();
           taskInput.remove();
           mainContent.projectArea.append(addTaskBtn);
         });
@@ -196,9 +196,11 @@ export default function UI() {
     }
   }
 
-  const createLayout = (function () {
+  const createLayout = function () {
     initiateSidebar();
     //const defaultProject = document.querySelector(".inbox");
     //defaultProject.dispatchEvent(new Event("click"));
-  })();
+  };
+
+  return createLayout();
 }

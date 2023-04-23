@@ -1,4 +1,3 @@
-import { compareAsc, toDate } from "date-fns";
 import createTask from "./Task";
 import createProject from "./Project";
 
@@ -9,7 +8,7 @@ export default function toDoList() {
     projects,
 
     saveToLocalStorage: function () {
-      localStorage.setItem("projects", JSON.stringify(projects));
+      localStorage.setItem("projects", JSON.stringify(this.projects));
     },
 
     loadFromLocalStorage: function () {
