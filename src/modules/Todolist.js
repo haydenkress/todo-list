@@ -8,13 +8,14 @@ export default function toDoList() {
     projects,
 
     saveToLocalStorage: function () {
+      console.log(this.projects);
       localStorage.setItem("projects", JSON.stringify(this.projects));
     },
 
     loadFromLocalStorage: function () {
       const projectsData = JSON.parse(localStorage.getItem("projects"));
       if (projectsData) {
-        projects = projectsData.map((projectData) => {
+        this.projects = projectsData.map((projectData) => {
           const project = createProject(projectData.title);
           if (projectData.tasks) {
             project.tasks = projectData.tasks.map((taskData) => {
@@ -26,9 +27,10 @@ export default function toDoList() {
           return project;
         });
       } else {
+        this.generateProject("Inbox");
         this.saveToLocalStorage(); // Save the updated myToDoList object with default projects to local storage
       }
-      return projects;
+      return this.projects;
     },
 
     getProject: function (projectName) {
@@ -46,7 +48,7 @@ export default function toDoList() {
 
     generateProject: function (name) {
       const project = createProject(name);
-      projects.push(project);
+      this.projects.push(project);
       project.addTask(createTask("do the dishes"));
       this.saveToLocalStorage();
       return project;

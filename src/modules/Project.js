@@ -1,3 +1,6 @@
+import createTask from "./Task";
+import toDoList from "./Todolist";
+const myToDoList = toDoList();
 const createProject = (title) => {
   const tasks = [];
 
@@ -18,7 +21,7 @@ const createProject = (title) => {
     tasks,
 
     addTask(todo) {
-      tasks.push(todo);
+      this.tasks.push(todo);
     },
 
     getName() {

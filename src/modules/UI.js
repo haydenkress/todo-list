@@ -47,7 +47,6 @@ export default function UI() {
 
   // starts the chain of functions
   const initiateSidebar = function () {
-    myToDoList.generateProject("Inbox");
     //const inbox = myToDoList.generateProject("Inbox");
     const totalProjects = myToDoList.loadFromLocalStorage();
     console.log(`total projects: ${totalProjects}`);
@@ -198,6 +197,7 @@ export default function UI() {
 
   const createLayout = function () {
     initiateSidebar();
+    console.log(myToDoList.projects);
     //const defaultProject = document.querySelector(".inbox");
     //defaultProject.dispatchEvent(new Event("click"));
   };
