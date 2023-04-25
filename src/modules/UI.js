@@ -1,8 +1,6 @@
 import "../style.css";
 import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
-import createProject from "./Project";
-import createTask from "./Task";
 import removeIcon from "../assets/icons/remove.svg";
 
 export default function UI() {
@@ -86,7 +84,6 @@ export default function UI() {
       });
     }
 
-    // adding new projects - THIS IS THE PROBLEM AREA  -- having trouble saving added projects to local storage and retrieved upon page reload
     const addProjectBtn = document.createElement("button");
     addProjectBtn.classList.add("add-project-btn");
     addProjectBtn.textContent = "Add Project";
@@ -136,10 +133,9 @@ export default function UI() {
     projectName.textContent = project.getName();
     projectName.classList.add("project-name");
 
-    projectName.addEventListener("click", () => {
+    projectElement.addEventListener("click", () => {
       clearTaskList();
-      const taskList = project.getTasks();
-      openProject(project, taskList);
+      openProject(project, project.tasks);
     });
     projectElement.append(projectName);
 
@@ -165,6 +161,7 @@ export default function UI() {
 
   // opening the project in the task area
   function openProject(project, tasks) {
+    myToDoList.saveCurrentProject(project);
     const projectName = project.title;
 
     const title = document.createElement("div");
@@ -188,7 +185,6 @@ export default function UI() {
       addTaskToDOM(task);
     });
 
-    // OTHER PROBLEM AREA -- having trouble saving added tasks to local storage and retrieved upon page reload
     if (project.title !== "Today" && project.title !== "This Week") {
       const addTaskBtn = document.createElement("button");
       addTaskBtn.classList.add("add-task-btn");
@@ -213,10 +209,13 @@ export default function UI() {
     }
   }
 
-  const createLayout = function () {
+  const createLayout = (function () {
     initiateSidebar();
-    console.log(myToDoList.projects);
-  };
-
-  return createLayout();
+    const currentProject = myToDoList.loadCurrentProject();
+    if (currentProject) {
+      clearTaskList();
+      // Call openProject with the loaded current project
+      openProject(currentProject, currentProject.tasks);
+    }
+  })();
 }

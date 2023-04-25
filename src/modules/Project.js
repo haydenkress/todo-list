@@ -1,6 +1,3 @@
-import createTask from "./Task";
-import toDoList from "./Todolist";
-const myToDoList = toDoList();
 const createProject = (title) => {
   const tasks = [];
 

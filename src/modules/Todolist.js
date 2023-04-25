@@ -33,6 +33,26 @@ export default function toDoList() {
       return this.projects;
     },
 
+    saveCurrentProject: function (project) {
+      localStorage.setItem("currentProject", JSON.stringify(project));
+    },
+
+    loadCurrentProject: function () {
+      const currentProject = JSON.parse(localStorage.getItem("currentProject"));
+      if (currentProject) {
+        const project = createProject(currentProject.title);
+        if (currentProject.tasks) {
+          // Update to use 'currentProject.tasks' instead of 'project.tasks'
+          project.tasks = currentProject.tasks.map((taskData) => {
+            const task = createTask(taskData.title);
+            task.isComplete = taskData.isComplete;
+            return task; // Update to return 'task' instead of 'project.tasks'
+          });
+        }
+        return project;
+      }
+    },
+
     getProject: function (projectName) {
       return this.projects.find((project) => project.getName() === projectName);
     },
@@ -54,10 +74,23 @@ export default function toDoList() {
       return project;
     },
 
+    /*saveTask: function (project, title) {
+      const task = createTask(title);
+      project.addTask(task);
+      this.saveCurrentProject(project);
+      this.saveToLocalStorage();
+      return task;
+    },*/
+
     saveTask: function (project, title) {
       const task = createTask(title);
       project.addTask(task);
+      const projectIndex = this.projects.findIndex(
+        (p) => p.title === project.title
+      );
+      this.projects[projectIndex] = project;
       this.saveToLocalStorage();
+      this.saveCurrentProject(project);
       return task;
     },
 

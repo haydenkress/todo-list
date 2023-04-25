@@ -103,3 +103,7 @@ body {
 .project-input {
   margin: 20px 0px;
 }
+
+.task:hover {
+  background-color: #ededed;
+}
