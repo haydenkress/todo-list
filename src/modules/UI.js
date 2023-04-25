@@ -3,6 +3,7 @@ import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
 import createProject from "./Project";
 import createTask from "./Task";
+import removeIcon from "../assets/icons/remove.svg";
 
 export default function UI() {
   const myToDoList = toDoList();
@@ -47,17 +48,14 @@ export default function UI() {
 
   // starts the chain of functions
   const initiateSidebar = function () {
-    //const inbox = myToDoList.generateProject("Inbox");
     const totalProjects = myToDoList.loadFromLocalStorage();
     console.log(`total projects: ${totalProjects}`);
 
     const defaultProjects = totalProjects.slice(0, 1);
     console.log(`default projects: ${defaultProjects}`);
-
     const createdProjects = totalProjects.slice(1);
     console.log(`created projects: ${createdProjects}`);
 
-    // div and append function for the default projects
     const defaultProjectList = document.createElement("div");
     defaultProjectList.classList.add("default-projects");
     mainContent.sidebar.append(defaultProjectList);
@@ -69,11 +67,13 @@ export default function UI() {
       });
     }
 
-    // heading separating default and created projs
     const projectsHeading = document.createElement("div");
     projectsHeading.classList.add("heading");
     projectsHeading.textContent = "My Projects";
     mainContent.sidebar.append(projectsHeading);
+
+    const lineBreak = document.createElement("hr");
+    mainContent.sidebar.append(lineBreak);
 
     const projectList = document.createElement("div");
     projectList.classList.add("projects");
@@ -94,12 +94,13 @@ export default function UI() {
 
     addProjectBtn.addEventListener("click", () => {
       const projectInput = document.createElement("input");
+      projectInput.classList.add("project-input");
       projectList.append(projectInput);
       addProjectBtn.remove();
 
       projectInput.addEventListener("blur", () => {
         const projectName = projectInput.value;
-        if (projectName.trim() !== "") {
+        if (projectName.trim() !== "" && projectName !== "Inbox") {
           const newProject = myToDoList.generateProject(projectName);
           const addedProject = createProjectTab(newProject);
           projectList.append(addedProject);
@@ -131,13 +132,30 @@ export default function UI() {
     projectElement.classList.add(
       project.getName().toLowerCase().replace(/\s+/g, "-")
     );
-    projectElement.textContent = project.getName();
+    const projectName = document.createElement("div");
+    projectName.textContent = project.getName();
+    projectName.classList.add("project-name");
 
-    projectElement.addEventListener("click", () => {
+    projectName.addEventListener("click", () => {
       clearTaskList();
       const taskList = project.getTasks();
       openProject(project, taskList);
     });
+    projectElement.append(projectName);
+
+    if (project.getName() !== "Inbox") {
+      const Remove = new Image();
+      Remove.src = removeIcon;
+      Remove.classList.add("remove-btn");
+
+      projectElement.append(Remove);
+
+      Remove.addEventListener("click", () => {
+        myToDoList.deleteProject(project);
+        projectElement.remove();
+      });
+    }
+
     return projectElement;
   }
 
@@ -198,8 +216,6 @@ export default function UI() {
   const createLayout = function () {
     initiateSidebar();
     console.log(myToDoList.projects);
-    //const defaultProject = document.querySelector(".inbox");
-    //defaultProject.dispatchEvent(new Event("click"));
   };
 
   return createLayout();

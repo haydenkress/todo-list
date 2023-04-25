@@ -36,11 +36,6 @@ body {
   padding: 30px;
 }
 
-.project {
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
 .menu-icon {
   width: 30px;
 }
@@ -53,6 +48,7 @@ body {
 .heading {
   font-size: 20px;
   margin: 20px 0px;
+  padding: 0px 10px;
 }
 
 .task-area {
@@ -67,4 +63,43 @@ body {
   box-sizing: border-box;
   padding: 30px;
   grid-row: 1;
+}
+
+.project {
+  margin: 10px 0px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  padding: 5px 10px;
+}
+
+.project:hover {
+  background-color: #ededed;
+}
+
+.project-name {
+  font-size: 20px;
+}
+
+.remove-btn {
+  width: 10px;
+}
+
+.add-project-btn {
+  display: block;
+  box-sizing: border-box;
+  background-color: #f27e3d;
+  color: white;
+  padding: 5px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px 0px 20px 10px;
+  border-style: none;
+}
+
+.project-input {
+  margin: 20px 0px;
 }
