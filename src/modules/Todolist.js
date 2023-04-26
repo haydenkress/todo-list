@@ -12,6 +12,13 @@ export default function toDoList() {
       localStorage.setItem("projects", JSON.stringify(this.projects));
     },
 
+    deleteCurrentProject: function () {
+      const localItem = localStorage.removeItem("currentProject");
+      if (!localItem) {
+        console.log("No current project");
+      }
+    },
+
     loadFromLocalStorage: function () {
       const projectsData = JSON.parse(localStorage.getItem("projects"));
       if (projectsData) {
@@ -73,14 +80,6 @@ export default function toDoList() {
       this.saveToLocalStorage();
       return project;
     },
-
-    /*saveTask: function (project, title) {
-      const task = createTask(title);
-      project.addTask(task);
-      this.saveCurrentProject(project);
-      this.saveToLocalStorage();
-      return task;
-    },*/
 
     saveTask: function (project, title) {
       const task = createTask(title);

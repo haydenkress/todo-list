@@ -1,3 +1,5 @@
+import toDoList from "./Todolist";
+const myToDoList = toDoList();
 const createProject = (title) => {
   const tasks = [];
 
@@ -17,19 +19,21 @@ const createProject = (title) => {
     title,
     tasks,
 
-    addTask(todo) {
+    addTask: function (todo) {
       this.tasks.push(todo);
     },
 
-    getName() {
+    getName: function () {
       return title;
     },
 
-    removeTask(todoIndex) {
-      this.tasks.splice(todoIndex, 1);
+    removeTask: function (taskName) {
+      const taskToDelete = this.tasks.find((task) => task.title === taskName); // Changed from task.name to task.title assuming title is the property name
+      this.tasks.splice(this.tasks.indexOf(taskToDelete), 1);
+      myToDoList.saveCurrentProject(this);
     },
 
-    getTasks() {
+    getTasks: function () {
       const tasksFromLocalStorage = getProjectTasksFromLocalStorage(this.title);
       if (tasksFromLocalStorage) {
         return tasksFromLocalStorage;

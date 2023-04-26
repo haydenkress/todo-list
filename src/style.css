@@ -104,6 +104,22 @@ body {
   margin: 20px 0px;
 }
 
+.task {
+  align-items: center;
+  padding: 5px 10px;
+  display: flex;
+  gap: 20px;
+}
+
 .task:hover {
   background-color: #ededed;
+}
+
+.task-circle {
+  width: 20px;
+}
+
+.task-name {
+  color: black;
+  font-size: 15px;
 }

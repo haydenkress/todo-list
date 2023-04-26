@@ -2,6 +2,7 @@ import "../style.css";
 import toDoList from "./Todolist";
 import MenuBar from "../assets/icons/menu.svg";
 import removeIcon from "../assets/icons/remove.svg";
+import Circle from "../assets/icons/circle.svg";
 
 export default function UI() {
   const myToDoList = toDoList();
@@ -11,7 +12,6 @@ export default function UI() {
   content.classList.add("content");
   body.append(content);
 
-  // create initial content
   const mainContent = (function () {
     const header = document.createElement("div");
     header.classList.add("header");
@@ -44,15 +44,10 @@ export default function UI() {
     };
   })();
 
-  // starts the chain of functions
   const initiateSidebar = function () {
     const totalProjects = myToDoList.loadFromLocalStorage();
-    console.log(`total projects: ${totalProjects}`);
-
     const defaultProjects = totalProjects.slice(0, 1);
-    console.log(`default projects: ${defaultProjects}`);
     const createdProjects = totalProjects.slice(1);
-    console.log(`created projects: ${createdProjects}`);
 
     const defaultProjectList = document.createElement("div");
     defaultProjectList.classList.add("default-projects");
@@ -60,7 +55,7 @@ export default function UI() {
 
     function addDefaultProjects() {
       defaultProjects.forEach((project) => {
-        const addedProject = createProjectTab(project);
+        const addedProject = addProjectToDOM(project);
         defaultProjectList.appendChild(addedProject);
       });
     }
@@ -79,7 +74,7 @@ export default function UI() {
 
     function addCreatedProjects() {
       createdProjects.forEach((project) => {
-        const addedProject = createProjectTab(project);
+        const addedProject = addProjectToDOM(project);
         projectList.append(addedProject);
       });
     }
@@ -99,7 +94,7 @@ export default function UI() {
         const projectName = projectInput.value;
         if (projectName.trim() !== "" && projectName !== "Inbox") {
           const newProject = myToDoList.generateProject(projectName);
-          const addedProject = createProjectTab(newProject);
+          const addedProject = addProjectToDOM(newProject);
           projectList.append(addedProject);
         }
         projectInput.remove();
@@ -122,8 +117,7 @@ export default function UI() {
     addCreatedProjects();
   };
 
-  // creating the actual tabs of the projects to sidebar
-  function createProjectTab(project) {
+  function addProjectToDOM(project) {
     const projectElement = document.createElement("div");
     projectElement.classList.add("project");
     projectElement.classList.add(
@@ -132,13 +126,14 @@ export default function UI() {
     const projectName = document.createElement("div");
     projectName.textContent = project.getName();
     projectName.classList.add("project-name");
+    projectElement.append(projectName);
 
     projectElement.addEventListener("click", () => {
       clearTaskList();
       openProject(project, project.tasks);
     });
-    projectElement.append(projectName);
 
+    // MAIN PROBLEM AREA ATM - FOR SOME REASON THE ELEMENT GETS REMOVED FROM DOM BUT THE TASK AREA DOES NOT CLEAR FULLY AND THE CURRENT PROJECT LOCAL STORAGE OBJECT DOESN'T GET CLEARED IF IT'S THE SAME PROJECT BEING DELETED
     if (project.getName() !== "Inbox") {
       const Remove = new Image();
       Remove.src = removeIcon;
@@ -147,6 +142,11 @@ export default function UI() {
       projectElement.append(Remove);
 
       Remove.addEventListener("click", () => {
+        clearTaskList();
+        const currentProject = myToDoList.loadCurrentProject();
+        if (currentProject.title === project.title) {
+          myToDoList.deleteCurrentProject();
+        }
         myToDoList.deleteProject(project);
         projectElement.remove();
       });
@@ -156,7 +156,7 @@ export default function UI() {
   }
 
   function clearTaskList() {
-    mainContent.projectArea.textContent = "";
+    mainContent.projectArea.innerHTML = "";
   }
 
   // opening the project in the task area
@@ -176,15 +176,29 @@ export default function UI() {
     function addTaskToDOM(task) {
       const taskElement = document.createElement("div");
       taskElement.classList.add("task");
-      taskElement.textContent = task.title;
+
+      const taskName = document.createElement("div");
+      taskName.classList.add("task-name");
+      taskName.textContent = task.title;
+
+      const taskCircle = new Image();
+      taskCircle.classList.add("task-circle");
+      taskCircle.src = Circle;
+
       taskArea.append(taskElement);
+      taskElement.append(taskCircle);
+      taskElement.append(taskName);
+
+      // ANOTHER BIG PROBLEM AREA - THERES AN ERROR IN THE SPLICING WHERE ANY TASKS THAT ARE COMPLETED ARE REMOVED FROM THE DOM BUT THE LAST ITEM ADDED TO LOCAL STORAGE IS DELETED, WHICH IS REALLY STRANGE WHEN YOU DELETE ANY TASKS NOT LAST ADDED AND UPON REFRESH THEY ARE BACK IN LOCAL STORAGE
+      taskCircle.addEventListener("click", () => {
+        task.isComplete = true;
+        project.removeTask(task);
+        myToDoList.saveToLocalStorage();
+        myToDoList.saveCurrentProject(project);
+        taskElement.remove();
+      });
       return taskElement;
     }
-
-    tasks.forEach((task) => {
-      addTaskToDOM(task);
-    });
-
     if (project.title !== "Today" && project.title !== "This Week") {
       const addTaskBtn = document.createElement("button");
       addTaskBtn.classList.add("add-task-btn");
@@ -207,6 +221,10 @@ export default function UI() {
         });
       });
     }
+
+    tasks.forEach((task) => {
+      addTaskToDOM(task);
+    });
   }
 
   const createLayout = (function () {
@@ -214,7 +232,6 @@ export default function UI() {
     const currentProject = myToDoList.loadCurrentProject();
     if (currentProject) {
       clearTaskList();
-      // Call openProject with the loaded current project
       openProject(currentProject, currentProject.tasks);
     }
   })();
