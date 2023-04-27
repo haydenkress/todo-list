@@ -22,6 +22,11 @@ export default function UI() {
     Menu.classList.add("menu-icon");
     header.append(Menu);
 
+    const pageTitle = document.createElement("div");
+    pageTitle.classList.add("page-title");
+    pageTitle.textContent = "ToDo List";
+    header.append(pageTitle);
+
     const main = document.createElement("div");
     main.classList.add("main");
 

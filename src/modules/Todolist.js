@@ -8,7 +8,7 @@ export default function toDoList() {
     projects,
 
     saveToLocalStorage: function () {
-      console.log(this.projects);
+      //console.log(this.projects);
       localStorage.setItem("projects", JSON.stringify(this.projects));
     },
 
