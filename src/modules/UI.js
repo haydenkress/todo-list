@@ -128,12 +128,6 @@ export default function UI() {
     projectName.classList.add("project-name");
     projectElement.append(projectName);
 
-    projectElement.addEventListener("click", () => {
-      clearTaskList();
-      openProject(project, project.tasks);
-    });
-
-    // MAIN PROBLEM AREA ATM - FOR SOME REASON THE ELEMENT GETS REMOVED FROM DOM BUT THE TASK AREA DOES NOT CLEAR FULLY AND THE CURRENT PROJECT LOCAL STORAGE OBJECT DOESN'T GET CLEARED IF IT'S THE SAME PROJECT BEING DELETED
     if (project.getName() !== "Inbox") {
       const Remove = new Image();
       Remove.src = removeIcon;
@@ -151,6 +145,10 @@ export default function UI() {
         projectElement.remove();
       });
     }
+    projectName.addEventListener("click", () => {
+      clearTaskList();
+      openProject(project, project.tasks);
+    });
 
     return projectElement;
   }
@@ -162,72 +160,70 @@ export default function UI() {
   // opening the project in the task area
   function openProject(project, tasks) {
     myToDoList.saveCurrentProject(project);
-    const projectName = project.title;
 
     const title = document.createElement("div");
     title.classList.add("title");
-    title.textContent = projectName;
+    title.textContent = project.title;
     mainContent.projectArea.append(title);
 
     const taskArea = document.createElement("div");
     taskArea.classList.add("task-area");
     mainContent.projectArea.append(taskArea);
 
-    function addTaskToDOM(task) {
-      const taskElement = document.createElement("div");
-      taskElement.classList.add("task");
-
-      const taskName = document.createElement("div");
-      taskName.classList.add("task-name");
-      taskName.textContent = task.title;
-
-      const taskCircle = new Image();
-      taskCircle.classList.add("task-circle");
-      taskCircle.src = Circle;
-
-      taskArea.append(taskElement);
-      taskElement.append(taskCircle);
-      taskElement.append(taskName);
-
-      // ANOTHER BIG PROBLEM AREA - THERES AN ERROR IN THE SPLICING WHERE ANY TASKS THAT ARE COMPLETED ARE REMOVED FROM THE DOM BUT THE LAST ITEM ADDED TO LOCAL STORAGE IS DELETED, WHICH IS REALLY STRANGE WHEN YOU DELETE ANY TASKS NOT LAST ADDED AND UPON REFRESH THEY ARE BACK IN LOCAL STORAGE
-      taskCircle.addEventListener("click", () => {
-        task.isComplete = true;
-        project.removeTask(task);
-        myToDoList.saveToLocalStorage();
-        myToDoList.saveCurrentProject(project);
-        taskElement.remove();
-      });
-      return taskElement;
-    }
-    if (project.title !== "Today" && project.title !== "This Week") {
-      const addTaskBtn = document.createElement("button");
-      addTaskBtn.classList.add("add-task-btn");
-      addTaskBtn.textContent = "Add Task";
-      mainContent.projectArea.append(addTaskBtn);
-
-      addTaskBtn.addEventListener("click", () => {
-        const taskInput = document.createElement("input");
-        mainContent.projectArea.append(taskInput);
-        addTaskBtn.remove();
-
-        taskInput.addEventListener("blur", () => {
-          const taskName = taskInput.value;
-          if (taskName.trim() !== "") {
-            const newTask = myToDoList.saveTask(project, taskName);
-            addTaskToDOM(newTask);
-          }
-          taskInput.remove();
-          mainContent.projectArea.append(addTaskBtn);
-        });
-      });
-    }
-
     tasks.forEach((task) => {
-      addTaskToDOM(task);
+      const addedTask = addTaskToDOM(project, task);
+      taskArea.append(addedTask);
+    });
+
+    const addTaskBtn = document.createElement("button");
+    addTaskBtn.classList.add("add-task-btn");
+    addTaskBtn.textContent = "Add Task";
+    mainContent.projectArea.append(addTaskBtn);
+
+    addTaskBtn.addEventListener("click", () => {
+      const taskInput = document.createElement("input");
+      mainContent.projectArea.append(taskInput);
+      addTaskBtn.remove();
+
+      taskInput.addEventListener("blur", () => {
+        const taskName = taskInput.value;
+        if (taskName.trim() !== "") {
+          const newTask = myToDoList.saveTask(project, taskName);
+          const addedTask = addTaskToDOM(project, newTask);
+          taskArea.append(addedTask);
+        }
+        taskInput.remove();
+        mainContent.projectArea.append(addTaskBtn);
+      });
     });
   }
 
-  const createLayout = (function () {
+  function addTaskToDOM(project, task) {
+    const taskElement = document.createElement("div");
+    taskElement.classList.add("task");
+
+    const taskName = document.createElement("div");
+    taskName.classList.add("task-name");
+    taskName.textContent = task.title;
+
+    const taskCircle = new Image();
+    taskCircle.classList.add("task-circle");
+    taskCircle.src = Circle;
+
+    taskElement.append(taskCircle);
+    taskElement.append(taskName);
+
+    taskCircle.addEventListener("click", () => {
+      task.isComplete = true;
+      project.removeTask(task);
+      myToDoList.saveToLocalStorage();
+      myToDoList.saveCurrentProject(project);
+      taskElement.remove();
+    });
+    return taskElement;
+  }
+
+  (function () {
     initiateSidebar();
     const currentProject = myToDoList.loadCurrentProject();
     if (currentProject) {

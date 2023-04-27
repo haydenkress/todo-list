@@ -102,7 +102,7 @@ export default function toDoList() {
 
     deleteProject: function (projectName) {
       const projectToDelete = this.projects.find(
-        (project) => project.getName() === projectName
+        (project) => project === projectName
       );
       this.projects.splice(this.projects.indexOf(projectToDelete), 1);
       this.saveToLocalStorage();

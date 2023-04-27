@@ -28,7 +28,7 @@ const createProject = (title) => {
     },
 
     removeTask: function (taskName) {
-      const taskToDelete = this.tasks.find((task) => task.title === taskName); // Changed from task.name to task.title assuming title is the property name
+      const taskToDelete = this.tasks.find((task) => task === taskName); // Changed from task.name to task.title assuming title is the property name
       this.tasks.splice(this.tasks.indexOf(taskToDelete), 1);
       myToDoList.saveCurrentProject(this);
     },

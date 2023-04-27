@@ -70,7 +70,7 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /*justify-content: space-between;*/
   border-radius: 12px;
   padding: 5px 10px;
 }
@@ -81,10 +81,12 @@ body {
 
 .project-name {
   font-size: 20px;
+  flex: 1;
 }
 
 .remove-btn {
   width: 10px;
+  align-self: flex-end center;
 }
 
 .add-project-btn {
