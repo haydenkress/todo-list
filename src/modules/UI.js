@@ -141,10 +141,12 @@ export default function UI() {
       projectElement.append(Remove);
 
       Remove.addEventListener("click", () => {
-        clearTaskList();
         const currentProject = myToDoList.loadCurrentProject();
-        if (currentProject.title === project.title) {
-          myToDoList.deleteCurrentProject();
+        if (currentProject) {
+          if (currentProject.title === project.title) {
+            clearTaskList();
+            myToDoList.deleteCurrentProject();
+          }
         }
         myToDoList.deleteProject(project);
         projectElement.remove();
