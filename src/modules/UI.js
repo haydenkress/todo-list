@@ -110,7 +110,9 @@ export default function UI() {
     mainContent.Menu.addEventListener("click", () => {
       if (mainContent.main.contains(mainContent.sidebar)) {
         mainContent.sidebar.remove();
+        mainContent.main.style.gridTemplateColumns = "1fr";
       } else {
+        mainContent.main.style.gridTemplateColumns = "minmax(200px, 1fr) 5fr";
         mainContent.main.insertBefore(
           mainContent.sidebar,
           mainContent.main.firstChild
