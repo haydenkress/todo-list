@@ -41,6 +41,7 @@ export default function toDoList() {
     },
 
     saveCurrentProject: function (project) {
+      //console.log(project);
       localStorage.setItem("currentProject", JSON.stringify(project));
     },
 

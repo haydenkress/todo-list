@@ -107,19 +107,21 @@ export default function UI() {
       });
     });
 
-    mainContent.Menu.addEventListener("click", () => {
-      if (mainContent.main.contains(mainContent.sidebar)) {
-        mainContent.sidebar.remove();
-        mainContent.main.style.gridTemplateColumns = "1fr";
-      } else {
-        mainContent.main.style.gridTemplateColumns = "minmax(200px, 1fr) 5fr";
-        mainContent.main.insertBefore(
-          mainContent.sidebar,
-          mainContent.main.firstChild
-        );
-      }
-    });
-
+    function menuToggle() {
+      mainContent.Menu.addEventListener("click", () => {
+        if (mainContent.main.contains(mainContent.sidebar)) {
+          mainContent.sidebar.remove();
+          mainContent.main.style.gridTemplateColumns = "1fr";
+        } else {
+          mainContent.main.style.gridTemplateColumns = "minmax(200px, 1fr) 5fr";
+          mainContent.main.insertBefore(
+            mainContent.sidebar,
+            mainContent.main.firstChild
+          );
+        }
+      });
+    }
+    menuToggle();
     addDefaultProjects();
     addCreatedProjects();
   };
@@ -155,8 +157,15 @@ export default function UI() {
       });
     }
     projectName.addEventListener("click", () => {
-      clearTaskList();
-      openProject(project, project.tasks);
+      const currentProject = myToDoList.loadCurrentProject();
+      if (currentProject) {
+        if (currentProject.title === project.title) {
+          return;
+        } else {
+          clearTaskList();
+          openProject(project, project.tasks);
+        }
+      }
     });
 
     return projectElement;
